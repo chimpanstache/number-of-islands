@@ -18,27 +18,21 @@ def map_the_island(grid, coords)
 
   until queue.empty?
     current = queue.shift
-    land_water = surrounding_earth(grid, [current[0], current[1]])
-    land_water.each do |l_w|
-      next if grid[l_w[0]][l_w[1]] != '1'
-
-      grid[l_w[0]][l_w[1]] = '2'
-      l_w << current
-      queue << l_w
-    end
+    land_water = surrounding_earth(grid, [current[0], current[1]], queue)
   end
   1
 end
 
-def surrounding_earth(grid, coords)
+def surrounding_earth(grid, coords, queue)
   earth_around = [[0, 1], [1, 0], [0, -1], [-1, 0]]
   land_water = []
   earth_around.each do |coordinates|
     calculation = [] << coords << coordinates
     calculation = calculation.transpose.map!(&:sum)
-    land_water << calculation if inside_grid?(grid, calculation)
+    next unless inside_grid?(grid, calculation) && grid[calculation[0]][calculation[1]] == '1'
+    grid[calculation[0]][calculation[1]] = '2'
+    queue << calculation
   end
-  land_water
 end
 
 def inside_grid?(grid, calculation)
